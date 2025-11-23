@@ -1,0 +1,96 @@
+plugins {
+    id 'fabric-loom'
+    id 'maven-publish'
+    id 'idea'
+}
+
+
+version = mod_version
+group = mod_group
+
+base {
+    archivesName = "${mod_id}-${project.name}-${minecraft_version}"
+}
+
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+
+    compileOnly project(":common")
+}
+
+
+loom {
+
+    mixin {
+        defaultRefmapName = "mixin/${mod_id}.mixins.refmap.json"
+    }
+
+
+    // Fabric Access Widener
+    if (project.hasProperty('fabric_aw_enabled') && project.findProperty('fabric_aw_enabled').toBoolean()) {
+        accessWidenerPath = file("src/main/resources/META-INF/${mod_id}.accesswidener")
+        project.logger.debug('Fabric Access Wideners are enabled for this mod')
+    }
+
+
+    runs {
+        client {
+            client()
+            setConfigName("Fabric Client")
+            ideConfigGenerated(true)
+            runDir("run")
+        }
+        server {
+            server()
+            setConfigName("Fabric Server")
+            ideConfigGenerated(true)
+            runDir("run")
+        }
+
+    }
+
+}
+
+
+// DataGen
+fabricApi {
+    configureDataGeneration()
+}
+
+
+// Process Resources
+tasks.named("processResources", ProcessResources) {
+    from(project(":common").sourceSets.main.resources)
+}
+
+
+// Common Compile
+tasks.withType(JavaCompile).configureEach {
+    source(project(":common").sourceSets.main.allSource)
+}
+
+
+// Jar
+tasks.named("remapJar").configure {
+    // custom jar name
+    //archiveFileName.set(""+".jar")
+}
+
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            artifact jar
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/mcmodsrepo"
+        }
+    }
+
+}

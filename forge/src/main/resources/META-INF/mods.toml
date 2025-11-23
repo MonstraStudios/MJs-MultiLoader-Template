@@ -1,0 +1,32 @@
+# Main
+modLoader="javafml"
+loaderVersion="${forge_loader_version_range}"
+license="${mod_licence}"
+issueTrackerURL="${mod_web_issue_tracker}" #optional
+
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+updateJSONURL="${mod_web_update_json}" #optional
+displayURL="${mod_web_homepage}" #optional
+logoFile="${mod_icon}"
+credits="${mod_credits}"
+authors="${mod_authors}"
+description="${mod_description}"
+
+# Dependencies
+[[dependencies.${mod_id}]]
+modId="forge"
+mandatory=true
+versionRange="${forge_loader_version_range}"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="minecraft"
+mandatory=true
+versionRange="${forge_minecraft_version_range}"
+ordering="NONE"
+side="BOTH"

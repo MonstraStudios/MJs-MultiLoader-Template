@@ -1,0 +1,130 @@
+plugins {
+    id 'net.minecraftforge.gradle'
+    id 'org.spongepowered.mixin'
+    id 'maven-publish'
+    id 'idea'
+}
+
+
+version = mod_version
+group = mod_group
+
+base {
+    archivesName = "${mod_id}-${project.name}-${minecraft_version}"
+}
+
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_loader_version}"
+    annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
+
+    compileOnly project(":common")
+}
+
+
+mixin {
+    add sourceSets.main, "mixin/${mod_id}.mixins.refmap.json"
+    config "mixin/${mod_id}.mixins.json"
+}
+
+
+minecraft {
+
+    mappings channel: "official", version: "${minecraft_version}"
+
+
+    // Forge Access Transformer
+    if (project.hasProperty('forge_ats_enabled') && project.findProperty('forge_ats_enabled').toBoolean()) {
+        accessTransformer = file("src/main/resources/META-INF/${mod_id}.accesstransformer.cfg")
+        project.logger.debug('Forge Access Transformers are enabled for this mod')
+    }
+
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'runClient'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                modClientRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'runServer'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                modServerRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            taskName 'runDatagen'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                modDataRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
+
+    }
+
+}
+
+
+// DataGen
+sourceSets.main.resources.srcDir 'src/generated/resources'
+
+
+// Process Resources
+tasks.named("processResources", ProcessResources).configure {
+    exclude "/.cache"
+    from(project(":common").sourceSets.main.resources)
+}
+
+
+// Common Compile
+tasks.withType(JavaCompile).configureEach {
+    source(project(":common").sourceSets.main.allSource)
+}
+
+
+// Jar
+tasks.named("jar", Jar).configure {
+    // custom jar name
+    //archiveFileName.set(""+".jar")
+}
+
+jar.finalizedBy('reobfJar')
+
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            artifact jar
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/mcmodsrepo"
+        }
+    }
+
+}
