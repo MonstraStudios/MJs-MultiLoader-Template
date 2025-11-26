@@ -1,7 +1,7 @@
 package com.myname.mymod;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
 public class MyModFabric implements ModInitializer {
 
@@ -15,7 +15,7 @@ public class MyModFabric implements ModInitializer {
         MyModCommon.init();
 
         // Register Commands
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             MyModCommon.registerCommands(dispatcher);
         });
 
