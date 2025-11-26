@@ -4,7 +4,7 @@ import com.myname.mymod.MyModConstants;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraft.data.DataGenerator;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.data.event.GatherDataEvent;
 
 @Mod.EventBusSubscriber(modid = MyModConstants.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class MyModDataGen {
@@ -14,7 +14,7 @@ public class MyModDataGen {
         DataGenerator dataGenerator = event.getGenerator();
 
         // Register Providers
-        dataGenerator.addProvider(new MyModRecipeProvider(dataGenerator));
+        dataGenerator.addProvider(true, new MyModRecipeProvider(dataGenerator));
 
     }
 

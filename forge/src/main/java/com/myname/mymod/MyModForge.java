@@ -5,15 +5,15 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 @Mod(MyModConstants.MOD_ID)
 public class MyModForge {
 
-    public MyModForge() {
+    public MyModForge(FMLJavaModLoadingContext context) {
 
         // Log
         MyModConstants.MOD_LOGGER.info(MyModConstants.MOD_NAME+"'s Forge initializing !");
@@ -22,11 +22,11 @@ public class MyModForge {
         MyModCommon.init();
 
         // Register Setup
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onSetup);
+        context.getModEventBus().addListener(this::onSetup);
         MinecraftForge.EVENT_BUS.register(this);
 
         // Register Client
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> MyModClientForge::new);
+        if (FMLEnvironment.dist == Dist.CLIENT) { MyModClientForge.MyModClientForgeInit(context); }
 
     }
 

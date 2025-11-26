@@ -9,10 +9,11 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 public class MyModClientForge {
 
-    public  MyModClientForge() {
+    public static void MyModClientForgeInit(FMLJavaModLoadingContext context) {
 
         // Register Events
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(MyModClientForge::onInitializeClient);
+        context.getModEventBus().addListener(MyModClientForge::onInitializeClient);
+
         MinecraftForge.EVENT_BUS.addListener(MyModClientForge::onRegisterClientCommands);
 
     }
@@ -24,6 +25,7 @@ public class MyModClientForge {
         MyModClientCommon.init();
 
     }
+
 
     // Register Client Commands
     public static void onRegisterClientCommands(RegisterClientCommandsEvent event) {
