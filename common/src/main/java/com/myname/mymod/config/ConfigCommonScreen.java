@@ -4,7 +4,7 @@ import com.myname.mymod.MyModConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
 public class ConfigCommonScreen extends Screen {
@@ -14,7 +14,7 @@ public class ConfigCommonScreen extends Screen {
     private static final int BUTTON_SPACING = 4;
 
     public ConfigCommonScreen() {
-        super(new TextComponent(MyModConstants.MOD_ID +"config-screen"));
+        super(Component.literal(MyModConstants.MOD_ID +"config-screen"));
     }
 
     @Override
@@ -30,14 +30,14 @@ public class ConfigCommonScreen extends Screen {
                 startY,
                 BUTTON_WIDTH,
                 BUTTON_HEIGHT,
-                new TextComponent("newInt: " + ConfigCommon.get().newInt),
+                Component.literal("newInt: " + ConfigCommon.get().newInt),
                 button -> {
                     ConfigCommon.get().newInt += 1;
                     if (ConfigCommon.get().newInt > 3) {
                         ConfigCommon.get().newInt = 1;
                     }
                     ConfigCommon.CONFIG.save();
-                    button.setMessage(new TextComponent("newInt: " + ConfigCommon.get().newInt));
+                    button.setMessage(Component.literal("newInt: " + ConfigCommon.get().newInt));
                 }
         ));
 
@@ -47,11 +47,11 @@ public class ConfigCommonScreen extends Screen {
                 startY + BUTTON_HEIGHT + BUTTON_SPACING,
                 BUTTON_WIDTH,
                 BUTTON_HEIGHT,
-                new TextComponent("newBool: " + ConfigCommon.get().newBool),
+                Component.literal("newBool: " + ConfigCommon.get().newBool),
                 button -> {
                     ConfigCommon.get().newBool = !ConfigCommon.get().newBool;
                     ConfigCommon.CONFIG.save();
-                    button.setMessage(new TextComponent("newBool: " + ConfigCommon.get().newBool));
+                    button.setMessage(Component.literal("newBool: " + ConfigCommon.get().newBool));
                 }
         ));
 
@@ -61,7 +61,7 @@ public class ConfigCommonScreen extends Screen {
                 startY + (BUTTON_HEIGHT + BUTTON_SPACING) * 2,
                 BUTTON_WIDTH,
                 BUTTON_HEIGHT,
-                new TextComponent("newString: " + ConfigCommon.get().newString),
+                Component.literal("newString: " + ConfigCommon.get().newString),
                 button -> {
                     if (ConfigCommon.get().newString.equals("steve")) {
                         ConfigCommon.get().newString = "alex";
@@ -70,7 +70,7 @@ public class ConfigCommonScreen extends Screen {
                         ConfigCommon.get().newString = "steve";
                     }
                     ConfigCommon.CONFIG.save();
-                    button.setMessage(new TextComponent("newString: " + ConfigCommon.get().newString));
+                    button.setMessage(Component.literal("newString: " + ConfigCommon.get().newString));
                 }
         ));
 
