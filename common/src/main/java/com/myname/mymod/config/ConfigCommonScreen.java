@@ -2,6 +2,7 @@ package com.myname.mymod.config;
 
 import com.myname.mymod.MyModConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -24,45 +25,32 @@ public class ConfigCommonScreen extends Screen {
         int startY = 40;
         int centerX = this.width / 2 - BUTTON_WIDTH / 2;
 
+
         // newInt button - 1 to 3
-        addRenderableWidget(new Button(
-                centerX,
-                startY,
-                BUTTON_WIDTH,
-                BUTTON_HEIGHT,
-                Component.literal("newInt: " + ConfigCommon.get().newInt),
-                button -> {
+        addRenderableWidget(
+                Button.builder(Component.literal("newInt: " + ConfigCommon.get().newInt), button -> {
                     ConfigCommon.get().newInt += 1;
-                    if (ConfigCommon.get().newInt > 3) {
+                    if (ConfigCommon.get().newInt > 3 ) {
                         ConfigCommon.get().newInt = 1;
                     }
                     ConfigCommon.CONFIG.save();
                     button.setMessage(Component.literal("newInt: " + ConfigCommon.get().newInt));
-                }
-        ));
+                }).bounds(centerX, startY, BUTTON_WIDTH, BUTTON_HEIGHT).build()
+        );
+
 
         // newBool button - true / false
-        addRenderableWidget(new Button(
-                centerX,
-                startY + BUTTON_HEIGHT + BUTTON_SPACING,
-                BUTTON_WIDTH,
-                BUTTON_HEIGHT,
-                Component.literal("newBool: " + ConfigCommon.get().newBool),
-                button -> {
+        addRenderableWidget(
+                Button.builder(Component.literal("newBool: " + ConfigCommon.get().newBool), button -> {
                     ConfigCommon.get().newBool = !ConfigCommon.get().newBool;
                     ConfigCommon.CONFIG.save();
                     button.setMessage(Component.literal("newBool: " + ConfigCommon.get().newBool));
-                }
-        ));
+                }).bounds(centerX, startY + BUTTON_HEIGHT + BUTTON_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT).build()
+        );
 
         // newString button - steve / alex
-        addRenderableWidget(new Button(
-                centerX,
-                startY + (BUTTON_HEIGHT + BUTTON_SPACING) * 2,
-                BUTTON_WIDTH,
-                BUTTON_HEIGHT,
-                Component.literal("newString: " + ConfigCommon.get().newString),
-                button -> {
+        addRenderableWidget(
+                Button.builder(Component.literal("newString: " + ConfigCommon.get().newString), button -> {
                     if (ConfigCommon.get().newString.equals("steve")) {
                         ConfigCommon.get().newString = "alex";
                     }
@@ -71,23 +59,23 @@ public class ConfigCommonScreen extends Screen {
                     }
                     ConfigCommon.CONFIG.save();
                     button.setMessage(Component.literal("newString: " + ConfigCommon.get().newString));
-                }
-        ));
-
+                }).bounds(centerX, startY + (BUTTON_HEIGHT + BUTTON_SPACING) * 2, BUTTON_WIDTH, BUTTON_HEIGHT).build()
+        );
     }
 
+
     @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(poseStack);
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(guiGraphics);
 
         // Heading
-        drawCenteredString(poseStack, this.font,
+        guiGraphics.drawCenteredString(this.font,
                 MyModConstants.MOD_NAME + " Config",
                 this.width / 2,
                 20,
                 0xFFFFFF);
 
-        super.render(poseStack, mouseX, mouseY, partialTicks);
+        super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     @Override

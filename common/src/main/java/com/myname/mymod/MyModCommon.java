@@ -57,16 +57,16 @@ public class MyModCommon {
     private static void reloadConfig(CommandSourceStack source) {
         ConfigCommon.CONFIG.reload();
         if (ConfigCommon.CONFIG.isHadErrorLoading()) {
-            source.sendSuccess(Component.literal(MyModConstants.MOD_ID + ": could not reload Config!"), false);
+            source.sendSuccess(() -> Component.literal(MyModConstants.MOD_ID + ": could not reload Config!"), false);
         } else {
-            source.sendSuccess(Component.literal(MyModConstants.MOD_ID + ": reloaded  Config!"), false);
+            source.sendSuccess(() -> Component.literal(MyModConstants.MOD_ID + ": reloaded  Config!"), false);
         }
     }
 
     public static void printConfig(CommandSourceStack source) {
         try {
             var cfg = ConfigCommon.get();
-            source.sendSuccess(Component.literal(MyModConstants.MOD_ID+": Config Values: "+cfg.newInt+", "+cfg.newBool +", "+ cfg.newString), false);
+            source.sendSuccess(() -> Component.literal(MyModConstants.MOD_ID+": Config Values: "+cfg.newInt+", "+cfg.newBool +", "+ cfg.newString), false);
         } catch (Exception e) {
             MyModConstants.MOD_LOGGER.error("Config: Error printing config values {}", String.valueOf(e));
         }
