@@ -14,7 +14,7 @@ public class MyModDataGen {
         DataGenerator dataGenerator = event.getGenerator();
 
         // Register Providers
-        dataGenerator.addProvider(true, new MyModRecipeProvider(dataGenerator));
+        dataGenerator.addProvider(event.includeServer(), new MyModRecipeProvider(dataGenerator.getPackOutput()));
 
     }
 

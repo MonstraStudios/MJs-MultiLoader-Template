@@ -1,7 +1,9 @@
 package com.myname.mymod.datagen;
 
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.world.item.Items;
@@ -11,15 +13,15 @@ import java.util.function.Consumer;
 
 public class MyModRecipeProvider extends RecipeProvider implements IConditionBuilder {
 
-    public MyModRecipeProvider(DataGenerator dataGenerator) {
-        super(dataGenerator);
+    public MyModRecipeProvider(PackOutput packOutput) {
+        super(packOutput);
     }
 
     @Override
-    protected void buildCraftingRecipes(@NotNull Consumer<FinishedRecipe> exporter) {
+    protected void buildRecipes(@NotNull Consumer<FinishedRecipe> exporter) {
 
         // Example Recipe - stone to diamond
-        ShapedRecipeBuilder.shaped(Items.DIAMOND)
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Items.DIAMOND)
                 .pattern("SSS")
                 .pattern("SSS")
                 .pattern("SSS")
