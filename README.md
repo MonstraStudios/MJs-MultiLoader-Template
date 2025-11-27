@@ -27,9 +27,9 @@ This template comes packed with features:
 
 ## Getting Started
 
-Run this in your IDE Terminal or download this zip, extract it and open it in your preferred IDE.
+Run this in your IDE Terminal / CMD prompt or download this zip, extract it and open it in your preferred IDE.
 ```bash 
-git clone https://github.com/mjdev83/MJs-MultiLoader-Template cd {folder}
+git clone https://github.com/MonstraStudios/MJs-MultiLoader-Template
 ```
 
 You only need to change a few things to test it-
