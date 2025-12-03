@@ -14,14 +14,6 @@ base {
 }
 
 
-dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_loader_version}"
-    annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
-
-    compileOnly project(":common")
-}
-
-
 mixin {
     add sourceSets.main, "mixin/${mod_id}.mixins.refmap.json"
     config "mixin/${mod_id}.mixins.json"
@@ -86,6 +78,17 @@ minecraft {
 
     }
 
+}
+
+
+repositories {}
+
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_loader_version}"
+    annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
+
+    compileOnly project(":common")
 }
 
 

@@ -13,16 +13,6 @@ base {
 }
 
 
-dependencies {
-    minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
-
-    compileOnly project(":common")
-}
-
-
 loom {
 
     mixin {
@@ -53,6 +43,19 @@ loom {
 
     }
 
+}
+
+
+repositories {}
+
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+
+    compileOnly project(":common")
 }
 
 
