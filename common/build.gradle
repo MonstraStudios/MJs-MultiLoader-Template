@@ -1,29 +1,41 @@
 plugins {
-    id 'java'
-    id 'org.spongepowered.gradle.vanilla'
-    id 'maven-publish'
-    id 'idea'
+    id 'multiloader-common'
+    id 'net.neoforged.moddev.legacyforge'
 }
 
 
-version = mod_version
-group = mod_group
+legacyForge {
 
-base {
-    archivesName = "${mod_id}-${project.name}-${minecraft_version}"
-}
+    mcpVersion = minecraft_version
 
 
-minecraft {
+    // Common Access Transformer
+    def at = project(':common').file("src/main/resources/META-INF/${mod_id}.accesstransformer.cfg")
+    if (at.exists()) {
+        validateAccessTransformers = true
+        accessTransformers = [at]
+        project.logger.debug('Common Access Transformers are enabled for this mod.')
+    }
 
-    version(minecraft_version)
+
+    // Parchment Mappings
+    if (providers.gradleProperty("use_parchment_mappings").orNull?.toBoolean()) {
+        parchment {
+            minecraftVersion = parchment_minecraft_version
+            mappingsVersion = parchment_version
+        }
+    }
+
 
     runs {
-        client("runClient") {
-            workingDirectory(file("run"))
+
+        client {
+            client()
+
         }
-        server("runServer") {
-            workingDirectory(file("run"))
+
+        server {
+            server()
         }
 
     }
@@ -36,27 +48,25 @@ repositories {}
 
 dependencies {
     compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
-    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
 }
 
 
-// Jar
-tasks.named("jar", Jar).configure {
-    // custom jar name
-    //archiveFileName.set(""+".jar")
+// Common Configurations
+configurations {
+
+    commonJava {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+
+    commonResources {
+        canBeResolved = false
+        canBeConsumed = true
+    }
+
 }
 
-
-publishing {
-    publications {
-        register('mavenJava', MavenPublication) {
-            artifact jar
-        }
-    }
-    repositories {
-        maven {
-            url "file://${project.projectDir}/mcmodsrepo"
-        }
-    }
-
+artifacts {
+    commonJava sourceSets.main.java.sourceDirectories.singleFile
+    commonResources sourceSets.main.resources.sourceDirectories.singleFile
 }

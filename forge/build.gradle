@@ -1,81 +1,60 @@
 plugins {
-    id 'net.minecraftforge.gradle'
-    id 'org.spongepowered.mixin'
-    id 'maven-publish'
-    id 'idea'
+    id 'multiloader-loader'
+    id 'net.neoforged.moddev.legacyforge'
 }
 
 
-version = mod_version
-group = mod_group
+legacyForge {
 
-base {
-    archivesName = "${mod_id}-${project.name}-${minecraft_version}"
-}
+    version = "${minecraft_version}-${forge_version}"
 
 
-mixin {
-    add sourceSets.main, "mixin/${mod_id}.mixins.refmap.json"
-    config "mixin/${mod_id}.mixins.json"
-}
-
-
-minecraft {
-
-    mappings channel: "official", version: "${minecraft_version}"
+    mixin {
+        add (sourceSets.main, "mixin/${mod_id}.mixins.refmap.json")
+        config ("mixin/${mod_id}.mixins.json")
+    }
 
 
     // Forge Access Transformer
-    if (project.hasProperty('forge_ats_enabled') && project.findProperty('forge_ats_enabled').toBoolean()) {
-        accessTransformer = file("src/main/resources/META-INF/${mod_id}.accesstransformer.cfg")
-        project.logger.debug('Forge Access Transformers are enabled for this mod')
+    def at = project(':common').file("src/main/resources/META-INF/${mod_id}.accesstransformer.cfg")
+    if (at.exists()) {
+        validateAccessTransformers = true
+        accessTransformers = [at]
+        project.logger.debug('Forge Access Transformers are enabled for this mod.')
+    }
+
+
+    // Parchment Mappings
+    if (providers.gradleProperty("use_parchment_mappings").orNull?.toBoolean()) {
+        parchment {
+            minecraftVersion = parchment_minecraft_version
+            mappingsVersion = parchment_version
+        }
     }
 
 
     runs {
+
         client {
-            workingDirectory project.file('run')
-            ideaModule "${rootProject.name}.${project.name}.main"
-            taskName 'runClient'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            mods {
-                modClientRun {
-                    source sourceSets.main
-                    source project(":common").sourceSets.main
-                }
-            }
+            client()
+        }
+
+        datagen {
+            data()
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
         }
 
         server {
-            workingDirectory project.file('run')
-            ideaModule "${rootProject.name}.${project.name}.main"
-            taskName 'runServer'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            mods {
-                modServerRun {
-                    source sourceSets.main
-                    source project(":common").sourceSets.main
-                }
-            }
+            server()
         }
 
-        data {
-            workingDirectory project.file('run')
-            ideaModule "${rootProject.name}.${project.name}.main"
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-            taskName 'runDatagen'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            mods {
-                modDataRun {
-                    source sourceSets.main
-                    source project(":common").sourceSets.main
-                }
-            }
-        }
+    }
 
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
     }
 
 }
@@ -85,10 +64,7 @@ repositories {}
 
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_loader_version}"
     annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
-
-    compileOnly project(":common")
 }
 
 
@@ -96,38 +72,12 @@ dependencies {
 sourceSets.main.resources.srcDir 'src/generated/resources'
 
 
-// Process Resources
-tasks.named("processResources", ProcessResources).configure {
-    exclude "/.cache"
-    from(project(":common").sourceSets.main.resources)
-}
-
-
-// Common Compile
-tasks.withType(JavaCompile).configureEach {
-    source(project(":common").sourceSets.main.allSource)
-}
-
-
 // Jar
 tasks.named("jar", Jar).configure {
-    // custom jar name
-    //archiveFileName.set(""+".jar")
-}
+    finalizedBy('reobfJar')
 
-jar.finalizedBy('reobfJar')
-
-
-publishing {
-    publications {
-        register('mavenJava', MavenPublication) {
-            artifact jar
-        }
-    }
-    repositories {
-        maven {
-            url "file://${project.projectDir}/mcmodsrepo"
-        }
-    }
-
+    rename "${mod_id}.mixins.refmap.json", "mixin/${mod_id}.mixins.refmap.json"
+    manifest.attributes([
+            "MixinConfigs": "${mod_id}.mixins.json"
+    ])
 }

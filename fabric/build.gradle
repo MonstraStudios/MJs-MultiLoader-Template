@@ -1,29 +1,22 @@
 plugins {
+    id 'multiloader-loader'
     id 'fabric-loom'
-    id 'maven-publish'
-    id 'idea'
-}
-
-
-version = mod_version
-group = mod_group
-
-base {
-    archivesName = "${mod_id}-${project.name}-${minecraft_version}"
 }
 
 
 loom {
 
     mixin {
+        useLegacyMixinAp = true
         defaultRefmapName = "mixin/${mod_id}.mixins.refmap.json"
     }
 
 
     // Fabric Access Widener
-    if (project.hasProperty('fabric_aw_enabled') && project.findProperty('fabric_aw_enabled').toBoolean()) {
-        accessWidenerPath = file("src/main/resources/META-INF/${mod_id}.accesswidener")
-        project.logger.debug('Fabric Access Wideners are enabled for this mod')
+    def aw = project(':common').file("src/main/resources/META-INF/${mod_id}.accesswidener")
+    if (aw.exists()) {
+        accessWidenerPath.set(aw)
+        project.logger.debug('Fabric Access Wideners are enabled for this mod.')
     }
 
 
@@ -43,6 +36,13 @@ loom {
 
     }
 
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+
 }
 
 
@@ -51,11 +51,18 @@ repositories {}
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings loom.officialMojangMappings()
+
+    mappings loom.layered {
+        officialMojangMappings()
+
+        // Parchment Mappings
+        if (providers.gradleProperty("use_parchment_mappings").orNull?.toBoolean()) {
+            parchment("org.parchmentmc.data:parchment-${parchment_minecraft_version}:${parchment_version}@zip")
+        }
+    }
+
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
-
-    compileOnly project(":common")
 }
 
 
@@ -65,35 +72,12 @@ fabricApi {
 }
 
 
-// Process Resources
-tasks.named("processResources", ProcessResources) {
-    from(project(":common").sourceSets.main.resources)
-}
-
-
-// Common Compile
-tasks.withType(JavaCompile).configureEach {
-    source(project(":common").sourceSets.main.allSource)
-}
-
-
-// Jar
-tasks.named("remapJar").configure {
-    // custom jar name
-    //archiveFileName.set(""+".jar")
-}
-
-
-publishing {
-    publications {
-        register('mavenJava', MavenPublication) {
-            artifact jar
+//
+def loaderAttr = Attribute.of('mc.gradleconventions.loader', String)
+loom.remapConfigurations.configureEach {
+    configurations.named(it.name) {
+        attributes {
+            attribute(loaderAttr, 'fabric')
         }
     }
-    repositories {
-        maven {
-            url "file://${project.projectDir}/mcmodsrepo"
-        }
-    }
-
 }
