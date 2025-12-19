@@ -1,0 +1,71 @@
+plugins {
+    id 'multiloader-common'
+}
+
+
+// Common Configurations
+configurations {
+
+    commonJava {
+        canBeResolved = true
+    }
+
+    commonResources {
+        canBeResolved = true
+    }
+
+}
+
+
+dependencies {
+
+    compileOnly(project(':common')) {
+        capabilities {
+            requireCapability("$group:$mod_id")
+        }
+        attributes {
+            attribute(
+                    Attribute.of('mc.gradleconventions.loader', String),
+                    'common'
+            )
+        }
+    }
+
+    commonJava project(path: ':common', configuration: 'commonJava')
+    commonResources project(path: ':common', configuration: 'commonResources')
+
+}
+
+
+// Process Resources
+tasks.named("processResources", ProcessResources).configure {
+    dependsOn(configurations.commonJava)
+    from(configurations.commonResources)
+}
+
+
+// Common Compile
+tasks.named('compileJava', JavaCompile).configure {
+    dependsOn(configurations.commonJava)
+    source(configurations.commonJava)
+}
+
+
+// Sources Jar
+if (providers.gradleProperty("sources_jar_enabled").orNull?.toBoolean()) {
+    tasks.named('sourcesJar', Jar).configure {
+        dependsOn(configurations.commonJava)
+        from(configurations.commonJava)
+        dependsOn(configurations.commonResources)
+        from(configurations.commonResources)
+    }
+}
+
+
+// Javadoc Jar
+if (providers.gradleProperty("javadoc_jar_enabled").orNull?.toBoolean()) {
+    tasks.named('javadoc', Javadoc).configure {
+        dependsOn(configurations.commonJava)
+        source(configurations.commonJava)
+    }
+}

@@ -1,105 +1,17 @@
+// define your Plugins here required by sub-projects, repos for these can be added in root/settings.gradle
+
 plugins {
-    id 'org.spongepowered.gradle.vanilla' version '0.2.1-SNAPSHOT' apply(false)
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)' apply(false)
-    id 'fabric-loom' version '1.7-SNAPSHOT' apply(false)
-    id 'org.spongepowered.mixin' version "0.7-SNAPSHOT" apply(false)
+    id 'net.neoforged.moddev.legacyforge' version '2.0.126' apply(false)
+    id 'fabric-loom' version '1.14-SNAPSHOT' apply(false)
 }
 
 
-subprojects {
+// Links for Plugins listed above -
 
-    apply plugin: 'java'
-
-
-    java {
-        toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-        if (project.hasProperty('sources_jar_enabled') && project.findProperty('sources_jar_enabled').toBoolean()) {
-            withSourcesJar()
-        }
-        if (project.hasProperty('javadoc_jar_enabled') && project.findProperty('javadoc_jar_enabled').toBoolean()) {
-            withJavadocJar()
-        }
-    }
+// legacyMDG - https://plugins.gradle.org/plugin/net.neoforged.moddev.legacyforge/, https://github.com/neoforged/ModDevGradle/blob/main/LEGACY.md/
+// Fabric - https://fabricmc.net/develop/
 
 
-    // Java Compile
-    tasks.withType(JavaCompile).configureEach {
-        options.encoding = "UTF-8"
-        options.release = 17
-    }
 
-
-    // Process Resources
-    tasks.withType(ProcessResources).configureEach {
-
-        inputs.property("mod_id", project.mod_id)
-        inputs.property("mod_name", project.mod_name)
-        inputs.property("mod_version", project.mod_version)
-        inputs.property("minecraft_version", project.minecraft_version)
-
-        filteringCharset = 'UTF-8'
-
-        filesMatching(["META-INF/mods.toml", "fabric.mod.json", "pack.mcmeta", "mixin/${mod_id}.mixins.json".toString()]) {
-            expand([
-                    // mod
-                    mod_id: project.mod_id,
-                    mod_name: project.mod_name,
-                    mod_version: project.mod_version,
-                    minecraft_version: project.minecraft_version,
-                    mod_licence: mod_licence,
-                    mod_authors: mod_authors,
-                    mod_credits: mod_credits,
-                    mod_description: mod_description,
-                    mod_icon: mod_icon,
-                    // forge
-                    forge_loader_version_range: forge_loader_version_range,
-                    forge_minecraft_version_range: forge_minecraft_version_range,
-                    // fabric
-                    fabric_loader_version: fabric_loader_version,
-                    fabric_api_version: fabric_api_version,
-                    // extra
-                    mod_web_homepage: mod_web_homepage,
-                    mod_web_update_json: mod_web_update_json,
-                    mod_web_source: mod_web_source,
-                    mod_web_issue_tracker: mod_web_issue_tracker
-
-            ])
-        }
-
-    }
-
-
-    // Jar
-    tasks.withType(Jar).configureEach {
-
-        from(rootProject.file("LICENCE")) {
-            rename {"${mod_id}.licence.txt"}
-        }
-
-        manifest {
-            attributes([
-                    "Specification-Title": project.mod_id,
-                    "Specification-Version": '1',
-                    "Specification-Vendor": project.mod_authors,
-                    "Implementation-Title": "${mod_id}-${mod_version}-${project.name}",
-                    "Implementation-Version": project.mod_version,
-                    "Implementation-Vendor": project.mod_authors,
-                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-            ])
-        }
-
-    }
-
-
-    repositories {
-        mavenCentral()
-
-        maven {
-            name = 'Sponge, Mixin'
-            url = 'https://repo.spongepowered.org/repository/maven-public/'
-        }
-
-    }
-
-}
+// Repos for your sub-project's Dependencies not Plugins
+repositories {}

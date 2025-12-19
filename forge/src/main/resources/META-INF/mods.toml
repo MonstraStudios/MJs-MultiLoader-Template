@@ -1,13 +1,13 @@
 # Main
 modLoader="javafml"
 loaderVersion="${forge_loader_version_range}"
-license="${mod_licence}"
+license="${mod_license}"
 issueTrackerURL="${mod_web_issue_tracker}" #optional
 
 
 [[mods]]
 modId="${mod_id}"
-version="${mod_version}"
+version="${version}"
 displayName="${mod_name}"
 updateJSONURL="${mod_web_update_json}" #optional
 displayURL="${mod_web_homepage}" #optional
@@ -20,7 +20,7 @@ description="${mod_description}"
 [[dependencies.${mod_id}]]
 modId="forge"
 mandatory=true
-versionRange="${forge_loader_version_range}"
+versionRange="[${forge_version},)"
 ordering="NONE"
 side="BOTH"
 
