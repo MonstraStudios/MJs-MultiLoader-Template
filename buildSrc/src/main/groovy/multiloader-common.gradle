@@ -140,6 +140,8 @@ if (!extensions.extraProperties.has("multiLoader")) {
 afterEvaluate {
 
     def loader = project.multiLoader.loaderName ?: project.name
+
+    
     ['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements'].each { variant ->
         configurations.findByName(variant)?.outgoing {
             capability("$group:${project.name}:$version")
@@ -151,6 +153,14 @@ afterEvaluate {
             suppressPomMetadataWarningsFor(variant)
         }
     }
+
+
+    ['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements'].each { variant ->
+        configurations.findByName(variant)?.attributes {
+            attribute(loaderAttribute, loader)
+        }
+    }
+
 
     sourceSets.configureEach {
         [
