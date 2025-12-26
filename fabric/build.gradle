@@ -72,7 +72,7 @@ fabricApi {
 }
 
 
-//
+// MultiLoader Loader Attribute
 def loaderAttr = Attribute.of('mc.gradleconventions.loader', String)
 loom.remapConfigurations.configureEach {
     configurations.named(it.name) {
